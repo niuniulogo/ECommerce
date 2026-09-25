@@ -1,0 +1,27 @@
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vs/
+*.user
+*.suo
+
+# .NET build output
+bin/
+obj/
+out/
+
+# Node
+node_modules/
+dist/
+*.local
+
+# Logs
+*.log
+
+# User uploads (runtime files)
+ECommerce.Api/wwwroot/uploads/
+
+# Frontend (separate repo)
+vue3-element-admin/
