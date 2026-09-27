@@ -1,3 +1,4 @@
+using ECommerce.Domain.Entities.Product;
 using ECommerce.Domain.Entities.System;
 using Microsoft.Extensions.Logging;
 
@@ -22,6 +23,6 @@ public class DbSeeder
             typeof(SysUser), typeof(SysRole), typeof(SysMenu), typeof(SysDept),
             typeof(SysDict), typeof(SysDictItem), typeof(SysConfig), typeof(SysLog),
             typeof(SysNotice), typeof(SysUserNotice), typeof(SysUserRole),
-            typeof(SysRoleMenu), typeof(SysRoleDept));
+            typeof(SysRoleMenu), typeof(SysRoleDept),typeof(Products),typeof(Categories));
     }
 }

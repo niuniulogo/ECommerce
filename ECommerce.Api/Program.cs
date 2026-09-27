@@ -2,12 +2,13 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using ECommerce.Api.Authentication;
-using ECommerce.Api.Filters;
+using ECommerce.Api.Endpoints;
 using ECommerce.Api.Middleware;
 using ECommerce.Application;
 using ECommerce.Infrastructure;
 using ECommerce.Shared.Results;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 
@@ -22,19 +23,16 @@ using Microsoft.OpenApi;
 var builder = WebApplication.CreateBuilder(args);
 
 // ----------------------------------------------------------------------------
-// 1. 控制器与 JSON 序列化
+// 1. Minimal API 与 JSON 序列化
 // ----------------------------------------------------------------------------
-builder.Services.AddControllers(options =>
-    {
-        // 自动校验：请求进入 Action 前自动跑对应 IValidator<T>，失败统一返回 400 ApiResult。
-        // 这样业务 Service 里就不用再手写 ValidateAndThrowAsync。
-        options.Filters.Add<ValidationFilter>();
-    }) // 注册 MVC 控制器能力（[ApiController] 等）
-    .AddJsonOptions(options =>
-    {
-        // 让中文等非 ASCII 字符原样输出，而不是 \uXXXX 转义，方便看返回。
-        options.JsonSerializerOptions.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
-    });
+// 本项目使用 Minimal API（端点处理器见 Endpoints/ 目录，全部为具名静态方法），
+// 不再注册 MVC 控制器。自动校验通过 ValidationEndpointFilter（IEndpointFilter）实现。
+builder.Services.Configure<JsonOptions>(options =>
+{
+    // 让中文等非 ASCII 字符原样输出，而不是 \uXXXX 转义，方便看返回。
+    // Minimal API 的端点 JSON 绑定与 TypedResults/Results 统一使用该配置。
+    options.SerializerOptions.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
+});
 builder.Services.AddEndpointsApiExplorer(); // 为 Swagger 提供端点元数据
 builder.Services.AddHttpContextAccessor(); // 允许在任意服务里拿到当前请求（JWT 等会用到）
 
@@ -160,7 +158,7 @@ app.UseStaticFiles();
 
 // 5.4 认证 → 授权 → 路由端点。必须先 UseAuthentication 再 UseAuthorization。
 app.UseAuthentication(); // 解析并校验 token，把登录信息放进 User
-app.UseAuthorization(); // 检查 [Authorize] / [Authorize(Roles=...)] 是否放行
-app.MapControllers(); // 把请求路由到具体 Controller
+app.UseAuthorization(); // 检查 RequireAuthorization() 的端点是否放行
+app.MapApiEndpoints(); // 注册全部 Minimal API 端点（/api/v1/...）
 
 app.Run(); // 启动 Kestrel，开始监听端口
