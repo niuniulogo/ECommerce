@@ -279,7 +279,7 @@ public class SysLogService
 
     public async Task<object> GetOverviewAsync(CancellationToken ct)
     {
-        var (todayPv, todayUv, yestPv, _, totalPv, totalUv) =
+        var (todayPv, todayUv, yestPv, yestUv, totalPv, totalUv) =
             await _logs.GetOverviewStatsAsync(DateTime.UtcNow.Date, DateTime.UtcNow.Date.AddDays(-1), ct);
 
         double Rate(long cur, long prev)
@@ -287,7 +287,16 @@ public class SysLogService
             return prev == 0 ? cur > 0 ? 1.0 : 0 : Math.Round((cur - prev) / (double)prev, 4);
         }
 
-        return new { todayPv, todayUv, totalPv, totalUv, pvGrowthRate = Rate(todayPv, yestPv), uvGrowthRate = 0.0 };
+        // 字段名与前端 VisitOverviewDetail 契约对齐（vue3-element-admin 仪表盘）。
+        return new
+        {
+            todayUvCount = todayUv,
+            totalUvCount = totalUv,
+            uvGrowthRate = Rate(todayUv, yestUv),
+            todayPvCount = todayPv,
+            totalPvCount = totalPv,
+            pvGrowthRate = Rate(todayPv, yestPv)
+        };
     }
 
     public async Task<object> GetTrendAsync(DateTime? startDate, DateTime? endDate, CancellationToken ct)

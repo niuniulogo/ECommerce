@@ -102,7 +102,10 @@ public class SysLogRepository : ISysLogRepository
         var todayUv = await _fsql.Select<SysLog>().Where(x => x.CreateTime >= todayStart && x.Ip != null).Distinct()
             .ToListAsync(x => x.Ip!, ct);
         var totalUv = await _fsql.Select<SysLog>().Where(x => x.Ip != null).Distinct().ToListAsync(x => x.Ip!, ct);
+        var yestUv = await _fsql.Select<SysLog>()
+            .Where(x => x.CreateTime >= yesterdayStart && x.CreateTime < todayStart && x.Ip != null)
+            .Distinct().ToListAsync(x => x.Ip!, ct);
         var totalPv = await _fsql.Select<SysLog>().CountAsync(ct);
-        return (todayPv, todayUv.Count, yesterdayPv, 0, totalPv, totalUv.Count);
+        return (todayPv, todayUv.Count, yesterdayPv, yestUv.Count, totalPv, totalUv.Count);
     }
 }
