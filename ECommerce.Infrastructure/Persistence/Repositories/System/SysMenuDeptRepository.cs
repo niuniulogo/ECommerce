@@ -55,7 +55,7 @@ public class SysMenuRepository : ISysMenuRepository
     public Task<List<SysMenu>> GetMenusByUserIdAsync(long userId, CancellationToken ct = default)
     {
         return _fsql.Select<SysUserRole, SysRoleMenu, SysMenu>()
-            .LeftJoin((ur, rm, m) => ur.RoleId == rm.RoleId && rm.MenuId == m.Id && m.Visible == 1)
+            .LeftJoin((ur, rm, m) => ur.RoleId == rm.RoleId && rm.MenuId == m.Id)
             .Where((ur, rm, m) => ur.UserId == userId && m.Type != "B")
             .Distinct()
             .ToListAsync((ur, rm, m) => m, ct);

@@ -75,11 +75,6 @@ public class SysUserDto
     public List<string>? RoleIds { get; set; }
 }
 
-public class SysResetPasswordDto
-{
-    public string Password { get; set; } = "";
-}
-
 // ---- 部门 ----
 public class SysDeptItemDto
 {

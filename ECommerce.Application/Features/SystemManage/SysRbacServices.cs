@@ -166,7 +166,7 @@ public class SysMenuService
     public async Task<object> GetRoutesAsync(long userId, List<string> roles, CancellationToken ct)
     {
         var menus = roles.Contains(RootRole)
-            ? (await _menus.GetAllAsync(ct)).Where(m => m.Type != "B" && m.Visible == 1).OrderBy(m => m.Sort).ToList()
+            ? (await _menus.GetAllAsync(ct)).Where(m => m.Type != "B").OrderBy(m => m.Sort).ToList()
             : (await _menus.GetMenusByUserIdAsync(userId, ct)).OrderBy(m => m.Sort).ToList();
 
         var nodes = menus.Select(m => new

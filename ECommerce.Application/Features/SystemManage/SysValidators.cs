@@ -48,14 +48,6 @@ public class SysUserDtoValidator : AbstractValidator<SysUserDto>
     }
 }
 
-public class SysResetPasswordDtoValidator : AbstractValidator<SysResetPasswordDto>
-{
-    public SysResetPasswordDtoValidator()
-    {
-        RuleFor(x => x.Password).MinimumLength(6).WithMessage("密码至少 6 位");
-    }
-}
-
 // ==================== 角色 ====================
 public class SysRoleFormDtoValidator : AbstractValidator<SysRoleFormDto>
 {

@@ -80,10 +80,13 @@ public static class SysUserEndpoints
         return ApiResult.Ok("删除成功");
     }
 
-    private static async Task<ApiResult> ResetPwd(long id, [FromBody] SysResetPasswordDto dto,
+    /// <summary>重置密码（前端模板约定：password 走 query string）。</summary>
+    private static async Task<ApiResult> ResetPwd(long id, [FromQuery] string password,
         [FromServices] SysUserService svc, CancellationToken ct)
     {
-        await svc.ResetPasswordAsync(id, dto.Password, ct);
+        if (string.IsNullOrWhiteSpace(password) || password.Length < 6)
+            return ApiResult.Fail("密码至少 6 位", ResultCodes.ValidationError);
+        await svc.ResetPasswordAsync(id, password, ct);
         return ApiResult.Ok("重置成功");
     }
 
