@@ -173,7 +173,9 @@ public class SysMenuService
         {
             id = m.Id, parentId = m.ParentId, path = m.RoutePath ?? "",
             component = m.Type == "C" ? "Layout" : m.Component,
-            name = m.RouteName ?? m.RoutePath ?? "",
+            // route_name 可能为空串（?? 只挡 null），空时回退 route_path，保证每条路由有唯一 name，
+            // 否则前端退出登录时无法按 name 移除旧路由，换账号后会残留上一个用户的页面。
+            name = string.IsNullOrWhiteSpace(m.RouteName) ? m.RoutePath ?? "" : m.RouteName,
             sort = m.Sort,
             meta = new { title = m.Name, icon = m.Icon, hidden = m.Visible == 0, keepAlive = m.KeepAlive == 1 }
         }).Cast<object>().ToList();
